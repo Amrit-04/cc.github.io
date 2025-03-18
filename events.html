@@ -6,6 +6,7 @@
     <title>Campus Connect - Events</title>
     <link rel="stylesheet" href="style.css" />
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script>
   </head>
   <body>
     <header>
@@ -72,15 +73,19 @@
         console.log("Email: " + responsePayload.email);
 
         // Update UI
-        document.getElementById('loginBtn').textContent = 'Logged In';
+        const loginBtn = document.getElementById('loginBtn');
+        loginBtn.textContent = 'Logged In';
+        loginBtn.style.backgroundColor = '#4CAF50'; // Green color for logged in state
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('userName', responsePayload.name);
       }
 
       // Check login status on page load
       window.onload = function() {
+        const loginBtn = document.getElementById('loginBtn');
         if (localStorage.getItem('isLoggedIn') === 'true') {
-          document.getElementById('loginBtn').textContent = 'Logged In';
+          loginBtn.textContent = 'Logged In';
+          loginBtn.style.backgroundColor = '#4CAF50'; // Green color for logged in state
         }
 
         // Initialize Google Sign-In
@@ -97,6 +102,7 @@
           localStorage.removeItem('isLoggedIn');
           localStorage.removeItem('userName');
           this.textContent = 'Login with Google';
+          this.style.backgroundColor = ''; // Reset to default color
           window.location.reload();
         } else {
           // Trigger Google Sign-In
