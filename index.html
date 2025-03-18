@@ -107,17 +107,24 @@
       // Create user in Firestore and Authentication
       async function createUser() {
         try {
-          // Create user in Firebase Authentication
-          const userCredential = await auth.createUserWithEmailAndPassword('ay6156@srmist.edu.in', 'amritesh04');
+          // First check if user exists
+          const userDoc = await db.collection('users').doc('ay6156@srmist.edu.in').get();
           
-          // Store additional user data in Firestore
-          await db.collection('users').doc(userCredential.user.uid).set({
-            email: 'ay6156@srmist.edu.in',
-            name: 'Amritesh',
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          
-          console.log('User created successfully');
+          if (!userDoc.exists) {
+            // Create user in Firebase Authentication
+            const userCredential = await auth.createUserWithEmailAndPassword('ay6156@srmist.edu.in', 'amritesh04');
+            
+            // Store additional user data in Firestore
+            await db.collection('users').doc('ay6156@srmist.edu.in').set({
+              email: 'ay6156@srmist.edu.in',
+              name: 'Amritesh',
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            console.log('User created successfully');
+          } else {
+            console.log('User already exists');
+          }
         } catch (error) {
           console.error('Error creating user:', error);
         }
@@ -172,7 +179,13 @@
           }
         } catch (error) {
           console.error('Login error:', error);
-          errorMessage.textContent = 'Invalid SRM ID or password';
+          if (error.code === 'auth/user-not-found') {
+            errorMessage.textContent = 'User not found. Please try again.';
+          } else if (error.code === 'auth/wrong-password') {
+            errorMessage.textContent = 'Wrong password. Please try again.';
+          } else {
+            errorMessage.textContent = 'Error logging in. Please try again.';
+          }
         }
       }
 
