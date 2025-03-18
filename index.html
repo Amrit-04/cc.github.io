@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Campus Connect</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="https://accounts.google.com/gsi/client" async></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script>
   </head>
   <body>
@@ -93,8 +93,16 @@
         // Initialize Google Sign-In
         google.accounts.id.initialize({
           client_id: '339760359015-eik0qhei35lnee371o2tonc83kfq2359.apps.googleusercontent.com',
-          callback: handleCredentialResponse
+          callback: handleCredentialResponse,
+          auto_select: false,
+          cancel_on_tap_outside: true
         });
+
+        // Render the button
+        google.accounts.id.renderButton(
+          document.getElementById('loginBtn'),
+          { theme: 'outline', size: 'large', width: '200' }
+        );
       };
 
       // Handle login/logout
@@ -105,9 +113,6 @@
           localStorage.removeItem('userName');
           this.textContent = 'Login with Google';
           window.location.reload();
-        } else {
-          // Trigger Google Sign-In
-          google.accounts.id.prompt();
         }
       });
     </script>
