@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Campus Connect - Events</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://accounts.google.com/gsi/client" async></script>
     <script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script>
   </head>
   <body>
@@ -78,11 +78,18 @@
         localStorage.setItem('userName', responsePayload.name);
       }
 
-      // Check login status on page load
+      // Initialize Google Sign-In when the page loads
       window.onload = function() {
+        // Check login status
         if (localStorage.getItem('isLoggedIn') === 'true') {
           document.getElementById('loginBtn').textContent = 'Logged In';
         }
+
+        // Initialize Google Sign-In
+        google.accounts.id.initialize({
+          client_id: '339760359015-eik0qhei35lnee371o2tonc83kfq2359.apps.googleusercontent.com',
+          callback: handleCredentialResponse
+        });
       };
 
       // Handle login/logout
@@ -94,15 +101,8 @@
           this.textContent = 'Login with Google';
           window.location.reload();
         } else {
-          // Initialize Google Sign-In
-          google.accounts.id.initialize({
-            client_id: '339760359015-eik0qhei35lnee371o2tonc83kfq2359.apps.googleusercontent.com',
-            callback: handleCredentialResponse
-          });
-          google.accounts.id.renderButton(
-            document.getElementById('loginBtn'),
-            { theme: 'outline', size: 'large', width: '200' }
-          );
+          // Trigger Google Sign-In
+          google.accounts.id.prompt();
         }
       });
     </script>
