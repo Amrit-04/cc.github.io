@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Failed - Campus Connect</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script>
+</head>
+<body>
+    <div class="failure-container">
+        <h1>Login Failed</h1>
+        <p>Sorry, there was an error during the login process.</p>
+        <a href="index.html" class="btn">Return to Home</a>
+    </div>
+
+    <script>
+        // Initialize Appwrite
+        const client = new Appwrite.Client();
+        const account = new Appwrite.Account(client);
+
+        client
+            .setEndpoint('YOUR_APPWRITE_ENDPOINT')
+            .setProject('YOUR_PROJECT_ID');
+
+        // Handle the OAuth callback
+        window.addEventListener('load', async () => {
+            try {
+                const session = await account.getSession('current');
+                if (session) {
+                    // If somehow we have a session, redirect to home
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Session error:', error);
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Success - Campus Connect</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script>
+</head>
+<body>
+    <div class="success-container">
+        <h1>Login Successful!</h1>
+        <p>You have been successfully logged in.</p>
+        <a href="index.html" class="btn">Return to Home</a>
+    </div>
+
+    <script>
+        // Initialize Appwrite
+        const client = new Appwrite.Client();
+        const account = new Appwrite.Account(client);
+
+        client
+            .setEndpoint('http://localhost/v1')
+            .setProject('67d9d9b000219a1ee22d');
+
+        // Handle the OAuth callback
+        window.addEventListener('load', async () => {
+            try {
+                const session = await account.getSession('current');
+                if (session) {
+                    // Store login state in localStorage
+                    localStorage.setItem('isLoggedIn', 'true');
+                    // Redirect to home page after successful login
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Session error:', error);
+                localStorage.setItem('isLoggedIn', 'false');
+                window.location.href = 'failure.html';
+            }
+        });
+    </script>
+</body>
+</html> 

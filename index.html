@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campus Connect</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <img src="./images//logo.png" />
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="events.html">Events</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><button id="loginBtn" class="login-btn">Login with Google</button></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section id="hero">
+      <div class="hero-content">
+        <h1>Where Students & Opportunities Meet</h1>
+        <p>
+          Discover events, workshops, and career opportunities— all in one
+          place.
+        </p>
+        <a href="events.html" class="btn">Explore Events</a>
+      </div>
+    </section>
+
+    <section id="billboard">
+      <h2>📢 Latest Announcements</h2>
+      <div class="announcement">🚀 Hackathon next week! Register now!</div>
+      <div class="announcement">🎓 New certification courses available!</div>
+      <div class="announcement">💡 Startup fair applications open!</div>
+    </section>
+
+    <section id="features">
+      <h2>Why Use Campus Connect?</h2>
+      <div class="feature-box">
+        <div class="feature">
+          <h3>📅 Event Listings</h3>
+          <p>
+            Find all campus events in one place, from hackathons to club
+            meetings.
+          </p>
+        </div>
+        <div class="feature">
+          <h3>📢 Billboard Announcements</h3>
+          <p>
+            Stay informed with important updates on opportunities and deadlines.
+          </p>
+        </div>
+        <div class="feature">
+          <h3>🎓 Career & Learning</h3>
+          <p>
+            Discover job fairs, recruitment drives, and certification courses.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // Initialize Appwrite
+      const client = new Appwrite.Client();
+      const account = new Appwrite.Account(client);
+
+      client
+          .setEndpoint('http://localhost/v1')
+          .setProject('67d9d9b000219a1ee22d');
+
+      // Check if user is already logged in
+      account.get()
+          .then(response => {
+              console.log('User is logged in:', response);
+              document.getElementById('loginBtn').textContent = 'Logged In';
+              localStorage.setItem('isLoggedIn', 'true');
+          })
+          .catch(error => {
+              console.log('User is not logged in');
+              document.getElementById('loginBtn').textContent = 'Login with Google';
+              localStorage.setItem('isLoggedIn', 'false');
+          });
+
+      // Handle login/logout
+      document.getElementById('loginBtn').addEventListener('click', async function() {
+          try {
+              if (this.textContent === 'Logged In') {
+                  await account.deleteSession('current');
+                  this.textContent = 'Login with Google';
+                  localStorage.setItem('isLoggedIn', 'false');
+                  window.location.reload();
+              } else {
+                  await account.createOAuth2Session(
+                      'google',
+                      'https://amrit-04.github.io/cc.github.io/success.html',
+                      'https://amrit-04.github.io/cc.github.io/failure.html'
+                  );
+              }
+          } catch (error) {
+              console.error('Authentication error:', error);
+          }
+      });
+    </script>
+  </body>
+</html>
