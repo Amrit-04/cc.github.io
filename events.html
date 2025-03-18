@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Campus Connect - Events</title>
     <link rel="stylesheet" href="style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script>
   </head>
   <body>
     <header>
@@ -60,45 +61,49 @@
 
     <script src="script.js"></script>
     <script>
-      // Initialize Appwrite
-      const client = new Appwrite.Client();
-      const account = new Appwrite.Account(client);
+      // Initialize Google Sign-In
+      function handleCredentialResponse(response) {
+        // Decode the JWT token
+        const responsePayload = jwt_decode(response.credential);
+        console.log("ID: " + responsePayload.sub);
+        console.log('Full Name: ' + responsePayload.name);
+        console.log('Given Name: ' + responsePayload.given_name);
+        console.log('Family Name: ' + responsePayload.family_name);
+        console.log("Image URL: " + responsePayload.picture);
+        console.log("Email: " + responsePayload.email);
 
-      client
-          .setEndpoint('http://localhost/v1')
-          .setProject('67d9d9b000219a1ee22d');
+        // Update UI
+        document.getElementById('loginBtn').textContent = 'Logged In';
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userName', responsePayload.name);
+      }
 
-      // Check if user is already logged in
-      account.get()
-          .then(response => {
-              console.log('User is logged in:', response);
-              document.getElementById('loginBtn').textContent = 'Logged In';
-              localStorage.setItem('isLoggedIn', 'true');
-          })
-          .catch(error => {
-              console.log('User is not logged in');
-              document.getElementById('loginBtn').textContent = 'Login with Google';
-              localStorage.setItem('isLoggedIn', 'false');
-          });
+      // Check login status on page load
+      window.onload = function() {
+        if (localStorage.getItem('isLoggedIn') === 'true') {
+          document.getElementById('loginBtn').textContent = 'Logged In';
+        }
+      };
 
       // Handle login/logout
-      document.getElementById('loginBtn').addEventListener('click', async function() {
-          try {
-              if (this.textContent === 'Logged In') {
-                  await account.deleteSession('current');
-                  this.textContent = 'Login with Google';
-                  localStorage.setItem('isLoggedIn', 'false');
-                  window.location.reload();
-              } else {
-                  await account.createOAuth2Session(
-                      'google',
-                      'https://amrit-04.github.io/cc.github.io/success.html',
-                      'https://amrit-04.github.io/cc.github.io/failure.html'
-                  );
-              }
-          } catch (error) {
-              console.error('Authentication error:', error);
-          }
+      document.getElementById('loginBtn').addEventListener('click', function() {
+        if (this.textContent === 'Logged In') {
+          // Logout
+          localStorage.removeItem('isLoggedIn');
+          localStorage.removeItem('userName');
+          this.textContent = 'Login with Google';
+          window.location.reload();
+        } else {
+          // Initialize Google Sign-In
+          google.accounts.id.initialize({
+            client_id: '339760359015-eik0qhei35lnee371o2tonc83kfq2359.apps.googleusercontent.com',
+            callback: handleCredentialResponse
+          });
+          google.accounts.id.renderButton(
+            document.getElementById('loginBtn'),
+            { theme: 'outline', size: 'large', width: '200' }
+          );
+        }
       });
     </script>
   </body>
